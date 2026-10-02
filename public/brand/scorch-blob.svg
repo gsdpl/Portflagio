@@ -1,0 +1,16 @@
+<svg width="400" height="420" viewBox="0 0 400 420" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="scorch-grad" x1="20" y1="410" x2="380" y2="10" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1A00FF"/>
+      <stop offset="0.5" stop-color="#7A3DFF"/>
+      <stop offset="1" stop-color="#FF8284"/>
+    </linearGradient>
+    <filter id="scorch-rough" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.009 0.013" numOctaves="4" seed="8" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="120" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+  <g filter="url(#scorch-rough)">
+    <ellipse cx="200" cy="210" rx="150" ry="168" fill="url(#scorch-grad)"/>
+  </g>
+</svg>

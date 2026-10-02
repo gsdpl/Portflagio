@@ -1,0 +1,23 @@
+---
+title: "Meurtre au Manoir"
+summary: "Un jeu d’enquête immersif où transcription vocale et modèle de langage local donnent vie à chaque interrogatoire."
+kicker: "Game design · Intelligence artificielle"
+galleryAlt:
+  - "Introduction à l’enquête du meurtre au manoir"
+  - "Interface de sélection des suspects"
+  - "Écran d’explication de l’enquête et des indices"
+---
+
+## Un meurtre mystérieux façonné par les questions de chaque joueur.
+
+Meurtre au Manoir est un jeu d’enquête qui associe une collecte structurée d’indices à des dialogues ouverts pilotés par l’intelligence artificielle. Le joueur explore la scène de crime, examine les preuves et interroge les personnages, tandis que le système relie chaque échange au contexte évolutif de l’affaire.
+
+### Une enquête guidée par la voix
+
+**Pygame** affiche l’environnement, gère les entrées du joueur et coordonne les éléments interactifs comme les personnages, les indices et les dialogues. L’interface fournit la structure d’une enquête classique tout en laissant de la place à des pistes plus personnelles.
+
+Les questions prononcées sont converties en texte avec **Whisper**, créant une transcription précise de chaque interrogatoire. Le résultat est ensuite transmis par Ollama à **Gemma 2**, qui génère des réponses adaptées au personnage, aux preuves et aux découvertes précédentes du joueur.
+
+### La technologie au service du récit
+
+La combinaison de graphismes en temps réel, de reconnaissance vocale et d’IA générative locale rend les dialogues plus spontanés sans perdre la structure indispensable au mystère. Chaque indice et chaque réponse contribuent à une enquête capable d’évoluer différemment selon les joueurs.

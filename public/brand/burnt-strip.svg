@@ -1,0 +1,16 @@
+<svg width="200" height="1000" viewBox="0 0 200 1000" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="burn" x1="0" y1="0" x2="0" y2="1000" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FF8284"/>
+      <stop offset="0.5" stop-color="#8A4DFF"/>
+      <stop offset="1" stop-color="#1A00FF"/>
+    </linearGradient>
+    <filter id="tear" x="-10%" y="-4%" width="130%" height="108%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.015 0.04" numOctaves="4" seed="7" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="70" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+  <g filter="url(#tear)">
+    <rect x="-30" y="-30" width="150" height="1060" fill="url(#burn)"/>
+  </g>
+</svg>

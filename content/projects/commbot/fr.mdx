@@ -1,0 +1,25 @@
+---
+title: "Commbot"
+summary: "Assistant RAG multimodal pour la régie publicitaire radio, conçu pour préparer les rendez-vous clients et centraliser la connaissance commerciale."
+kicker: "Développement · Product"
+galleryAlt:
+  - "Mode préparation de rendez-vous client"
+  - "Fiche récapitulative d'un annonceur"
+  - "Écran d'accueil de l'assistant Commbot"
+---
+
+## Un assistant intelligent au service des commerciaux radio.
+
+Commbot est un assistant conversationnel développé pour les commerciaux d'une régie publicitaire radio. Il centralise la connaissance métier et facilite la préparation des rendez-vous clients grâce à une architecture RAG multimodale.
+
+### Architecture et ingestion
+
+Le système ingère des sources variées — documents PDF, pages WordPress, images et vidéos — pour construire une base de connaissances riche et à jour. La recherche hybride combine approche sémantique et full-text, avec une normalisation linguistique adaptée au français et des modèles d'embeddings multilingues.
+
+### Préparation de rendez-vous
+
+La fonctionnalité phare permet aux commerciaux de préparer leurs rendez-vous clients : l'assistant agrège automatiquement les informations pertinentes sur un annonceur — historique, secteur d'activité, offres adaptées — pour générer un dossier de préparation structuré et sourcé.
+
+### Stack technique
+
+Le produit repose sur **Python** et **FastAPI** pour l'API, **Supabase** avec pgvector pour le stockage vectoriel, l'**API Claude** (Anthropic) pour la génération de réponses contextualisées, et un déploiement sur **Coolify** pour l'hébergement autonome.

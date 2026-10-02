@@ -1,0 +1,499 @@
+================================================================================
+  PORTFOLIO GASPARD DUPLAIX — GUIDE TECHNIQUE COMPLET
+  duplaixgaspard.com
+  Derniere mise a jour : 29 septembre 2026
+================================================================================
+
+TABLE DES MATIERES
+  1. Presentation generale
+  2. Stack technique
+  3. Architecture du projet
+  4. Esthetique et direction artistique
+  5. Systeme i18n
+  6. Systeme de projets (ajout / modification)
+  7. Systeme de filtres SVG (broderie)
+  8. Composants cles
+  9. Feature : Smash Game ("Destroy the AI Portfolio")
+  10. Transitions de page (Ink Transition)
+  11. Commandes utiles
+  12. Verification UI (screenshots automatises)
+  13. Deploiement
+  14. Points en attente / TODO
+  15. Pieges connus
+
+================================================================================
+1. PRESENTATION GENERALE
+================================================================================
+
+Portfolio personnel de Gaspard Duplaix, etudiant Epitech Digital School.
+Product designer et developpeur creatif.
+Domaine : duplaixgaspard.com (deploye sur Vercel).
+
+L'esthetique est MEDIEVALE / PARCHEMIN BRULE / TEXTILE :
+- Papier texture, coins brules, lettrines ornees
+- Filtres SVG de broderie duotone sur les logos des projets
+- Polices gothiques (Grenze Gotisch pour les titres, UnifrakturCook pour lettrine)
+- Manrope pour le corps de texte
+- Palette : violet (#1a00ff), rose (#ff8284), blanc parchemin
+
+================================================================================
+2. STACK TECHNIQUE
+================================================================================
+
+Framework      : Next.js 16.2.9 (App Router, Turbopack)
+React          : 19.2.7
+TypeScript     : 5.9.3 (strict)
+CSS            : Tailwind CSS 4.3.1 + CSS custom properties (globals.css)
+Animations     : motion (v12.41.0, importe depuis "motion/react")
+MDX            : next-mdx-remote 6.0.0
+UI primitives  : Radix UI (Dialog, Slot)
+Icones         : lucide-react 1.21.0
+Merge classes  : clsx + tailwind-merge (via cn() dans lib/utils.ts)
+Tests visuels  : playwright-core 1.61.1 (utilise Microsoft Edge, pas Chromium)
+
+Alias TypeScript : @/* -> ./src/*
+
+IMPORTANT :
+- motion v12 s'importe depuis "motion/react" (PAS "framer-motion")
+- AnimatePresence, motion.div, etc. viennent tous de "motion/react"
+- Le projet n'est PAS un depot git (pas de .git)
+
+================================================================================
+3. ARCHITECTURE DU PROJET
+================================================================================
+
+C:\Users\Utilisateur\Desktop\Portfolio\
+|
+|-- .claude/
+|   |-- launch.json            # Config serveur dev pour Claude Code (port 3000)
+|
+|-- content/
+|   |-- projects/
+|       |-- {slug}/
+|           |-- fr.mdx         # Contenu FR (frontmatter + corps MDX)
+|           |-- en.mdx         # Contenu EN
+|
+|-- public/
+|   |-- brand/                 # Assets de marque (portrait, lettrines, textures)
+|   |   |-- paper-grain.svg    # Texture papier
+|   |   |-- textile.svg        # Texture textile
+|   |   |-- coin-brule.png     # Coins brules
+|   |   |-- lettrine.svg       # Lettrine ornee
+|   |   |-- emblem-source.svg  # Embleme GD
+|   |-- documents/             # CV PDF + PNG
+|   |-- projects/
+|       |-- {slug}/            # thumbnail + screenshots de chaque projet
+|       |-- scenes/            # Images plein ecran pour l'Ink Transition
+|           |-- {slug}.png
+|
+|-- scripts/
+|   |-- verify-ui.mjs          # Script de verification visuelle (Playwright + Edge)
+|
+|-- src/
+    |-- app/
+    |   |-- globals.css         # CSS principal (~2800+ lignes, tout le style custom)
+    |   |-- [locale]/
+    |   |   |-- layout.tsx      # Layout racine (polices, GlassFilterDefs, SmashGame)
+    |   |   |-- page.tsx        # Page d'accueil (hero, grille projets, CV)
+    |   |   |-- template.tsx    # Template de transition
+    |   |   |-- not-found.tsx
+    |   |   |-- projects/
+    |   |       |-- [slug]/
+    |   |           |-- page.tsx  # Page projet individuelle
+    |   |-- (redirect)/         # Redirect racine / -> /en
+    |   |-- sitemap.ts
+    |   |-- robots.ts
+    |
+    |-- components/
+    |   |-- brand-emblem.tsx
+    |   |-- kinetic-hero.tsx     # Hero anime avec lettrine
+    |   |-- language-switcher.tsx
+    |   |-- media-lightbox.tsx   # Lightbox modale pour les images
+    |   |-- paper-edges.tsx      # Coins brules decoratifs
+    |   |-- project-explorer.tsx # Section "Selected work" avec filtres
+    |   |-- project-gallery.tsx  # Galerie d'images sur la page projet
+    |   |-- project-grid.tsx     # Grille de cartes projets + ScreenCarousel
+    |   |-- resume-section.tsx   # Section CV/parcours
+    |   |-- site-footer.tsx
+    |   |-- site-header.tsx      # Header avec nav + language switcher
+    |   |-- transition-provider.tsx  # Ink Transition (phase machine)
+    |   |
+    |   |-- glass/
+    |   |   |-- glass-filter-defs.tsx  # Filtres SVG (broderie + logo duotone)
+    |   |   |-- glass-panel.tsx        # Panneau vitré avec effets
+    |   |
+    |   |-- magicui/
+    |   |   |-- blur-fade.tsx    # Animation d'entree avec flou
+    |   |   |-- number-ticker.tsx # Compteur anime
+    |   |   |-- border-beam.tsx  # Bordure lumineuse animee
+    |   |
+    |   |-- smash-game/          # Feature "Destroy the AI Portfolio"
+    |   |   |-- smash-types.ts
+    |   |   |-- smash-scoring.ts
+    |   |   |-- smash-game-provider.tsx
+    |   |   |-- fake-portfolio.tsx
+    |   |   |-- smash-canvas.tsx
+    |   |   |-- smash-hud.tsx
+    |   |   |-- smash-end-screen.tsx
+    |   |   |-- smash-game-overlay.tsx
+    |   |
+    |   |-- ui/
+    |       |-- button.tsx
+    |
+    |-- data/
+    |   |-- projects.ts          # Metadata de tous les projets (ordre = affichage)
+    |   |-- resume.ts            # Donnees du CV
+    |
+    |-- lib/
+    |   |-- i18n.ts              # Dictionnaires en/fr + helper getDictionary()
+    |   |-- projects.ts          # Fonctions de lecture MDX
+    |   |-- threads.ts           # Couleurs de broderie par projet
+    |   |-- utils.ts             # cn() merge classes
+    |
+    |-- types/
+        |-- project.ts           # Types : Locale, ProjectMetadata, etc.
+        |-- resume.ts
+
+================================================================================
+4. ESTHETIQUE ET DIRECTION ARTISTIQUE
+================================================================================
+
+Theme : medieval, parchemin brule, textile, broderie
+
+POLICES (chargees via next/font/google dans layout.tsx) :
+- --font-manrope   : Manrope (corps, UI)
+- --font-grenze    : Grenze Gotisch 400-900 (titres, display)
+- --font-lettrine  : UnifrakturCook 700 (lettrine decorative du hero)
+
+COULEURS (CSS custom properties dans :root de globals.css) :
+- --paper: #ffffff              (fond principal)
+- --ink: #000000                (texte)
+- --ink-soft: #333333           (texte secondaire)
+- --violet: #1a00ff             (accent principal)
+- --violet-deep: #1a00ff       (selection, focus)
+- --pink: #ff8284              (accent secondaire)
+- --burn-gradient               (degradee violet -> rose)
+- --glass-fill / --glass-edge   (effets vitres)
+- --line: rgba(0,0,0,0.16)     (bordures)
+
+TEXTURES (SVG dans public/brand/) :
+- paper-grain.svg  -> var(--paper-texture) : grain de papier en fond
+- textile.svg      -> var(--textile-texture) : trame tissu
+- coin-brule.png   : coins brules aux angles de la page
+
+EFFETS VISUELS CLES :
+- Coins brules animes (scorch-breathe keyframes, mix-blend-mode: multiply)
+- Filtres SVG de broderie duotone (voir section 7)
+- Bordure "couture" en pointilles sur les cartes
+- Refraction verre (glass-refraction filter sur GlassPanel)
+
+CHAQUE PROJET A SES PROPRES COULEURS (dans data/projects.ts) :
+- accent    : couleur vive du projet (pour tags, accents)
+- accentSoft : version sombre (pour fonds, mode nuit)
+
+================================================================================
+5. SYSTEME i18n
+================================================================================
+
+Locales : "en" et "fr" (definies dans types/project.ts)
+Routing : /[locale]/ (en, fr)
+Redirect racine : / -> /en
+
+Dictionnaires : src/lib/i18n.ts (objet statique, pas de lib externe)
+  - dictionaries.en et dictionaries.fr
+  - Acces : getDictionary(locale)
+
+Contenu projet : content/projects/{slug}/fr.mdx et en.mdx
+  - Frontmatter : title, summary, kicker, galleryAlt (string[])
+  - Corps : MDX libre (titres h2/h3, paragraphes)
+
+NOTE : le texte "Six projets" dans selectedIntro est code en dur dans i18n.ts.
+       Penser a le mettre a jour si le nombre de projets change (maintenant 7).
+
+================================================================================
+6. SYSTEME DE PROJETS (AJOUT / MODIFICATION)
+================================================================================
+
+Pour ajouter un nouveau projet, 5 etapes :
+
+ETAPE 1 — Assets dans public/projects/{slug}/
+  - thumbnail.png ou .svg (logo du projet, ~2880x1800 ou 2880x1620)
+  - 3 screenshots (gallery) en .png ou .webp avec dimensions exactes
+  - (optionnel) public/projects/scenes/{slug}.png pour l'Ink Transition
+
+ETAPE 2 — Entree dans src/data/projects.ts
+  Ajouter un objet ProjectMetadata dans le tableau `projects` :
+  {
+    slug: "mon-projet",
+    year: 2025,
+    technologies: ["Tech1", "Tech2"],
+    categories: ["development", "design", "product"],  // 1 a 3
+    accent: "#hexcolor",
+    accentSoft: "#hexcolor-dark",
+    thumbnail: { src: "/projects/mon-projet/thumbnail.png", width: W, height: H },
+    gallery: [
+      { src: "/projects/mon-projet/screen1.png", width: W, height: H },
+      ...
+    ],
+    externalUrl: "https://..." // optionnel
+  }
+
+  IMPORTANT : l'ORDRE dans le tableau = l'ordre d'affichage sur la grille.
+
+ETAPE 3 — Couleur de broderie dans src/lib/threads.ts
+  Ajouter la couleur (hex) dans le tableau `threads`, A LA MEME POSITION
+  que le projet dans data/projects.ts. L'index doit correspondre.
+  Les filtres SVG sont generes dynamiquement (embroidery-N, logo-N).
+
+ETAPE 4 — Contenu MDX
+  Creer content/projects/{slug}/fr.mdx et en.mdx avec :
+  ---
+  title: "Nom du Projet"
+  summary: "Description courte"
+  kicker: "Categorie · Sous-categorie"
+  galleryAlt:
+    - "Alt text image 1"
+    - "Alt text image 2"
+    - "Alt text image 3"
+  ---
+  ## Titre principal
+  Contenu libre en MDX...
+
+ETAPE 5 — Verification
+  - npm run build (doit compiler sans erreur)
+  - npm run dev -> verifier sur localhost:3000
+  - Verifier la carte sur la grille (logo, hover -> screenshots)
+  - Verifier la page projet (/en/projects/{slug})
+  - Verifier l'Ink Transition si scene ajoutee
+
+PROJETS ACTUELS (ordre d'affichage, sept. 2026) :
+  1. neo-travel    — #d7ff5f (lime)    — Product design + dev full-stack
+  2. commbot       — #00b4d8 (cyan)    — Assistant RAG pour regie radio
+  3. enjoy-33      — #ff2c91 (pink)    — JS + Velo.js + Meta API
+  4. meurtre-au-manoir — #b927ff (violet) — Python + Pygame + Whisper
+  5. we-happers    — #617df4 (bleu)    — Figma + Webflow
+  6. naviroll      — #ff7d65 (corail)  — FlutterFlow + Figma
+  7. festivault    — #40c99a (vert)    — Figma + Illustrator
+
+================================================================================
+7. SYSTEME DE FILTRES SVG (BRODERIE)
+================================================================================
+
+Definis dans : src/components/glass/glass-filter-defs.tsx
+Couleurs dans : src/lib/threads.ts
+
+Deux types de filtres par projet, generes dynamiquement :
+
+1. embroidery-N : duotone broderie
+   - Desature -> niveaux -> duotone (cloth blanc + couleur thread)
+   - Turbulence pour effet de couture
+   - Utilise sur les logos dans la grille (.card-thumb-logo)
+   - Utilise en tapisserie sur les pages projets (::before avec opacity 6%)
+
+2. logo-N : duotone inverse pour miniatures
+   - Le fond devient la couleur du projet
+   - Le logo devient blanc
+   - Pas de displacement (reste net)
+   - Utilise sur les miniatures de cartes
+
+CSS custom properties par carte (dans project-grid.tsx) :
+  --thread-color  : couleur du thread (hex)
+  --thumb-filter  : url(#embroidery-N)
+  --logo-filter   : url(#logo-N)
+  --card-thumb    : url(/projects/{slug}/thumbnail.ext)
+
+================================================================================
+8. COMPOSANTS CLES
+================================================================================
+
+TransitionProvider (transition-provider.tsx) :
+  - Phase machine : idle -> in -> hold -> out
+  - Ink Transition plein ecran entre les pages projet
+  - Canvas SVG avec animation de lettres du titre
+  - Contexte React : useInkTransition()
+
+ProjectGrid (project-grid.tsx) :
+  - Grille de cartes projets
+  - ScreenCarousel : au hover de la CARTE ENTIERE, le logo est remplace
+    par un carousel auto-scrollant des screenshots (1800ms interval)
+  - hoveredSlug state au niveau du grid (pas du media zone)
+  - ENABLE_PROJECT_SOUND = false (mecanisme cable, en attente de MP3)
+
+GlassPanel (glass/glass-panel.tsx) :
+  - Panneau vitré style medieval
+  - Utilise pour la lightbox, l'ecran de fin du Smash Game
+
+KineticHero (kinetic-hero.tsx) :
+  - Hero anime avec lettrine UnifrakturCook
+  - Texte defilant / anime
+
+MediaLightbox (media-lightbox.tsx) :
+  - Modale plein ecran avec Radix Dialog pour les images
+
+================================================================================
+9. FEATURE : SMASH GAME ("Destroy the AI Portfolio")
+================================================================================
+
+Concept : un faux portfolio IA generique recouvre le vrai portfolio.
+L'utilisateur attrape un marteau et casse le faux pour reveler le vrai.
+
+Fichiers : src/components/smash-game/
+
+PHASES (state machine dans smash-game-provider.tsx) :
+  dormant  -> localStorage dit "deja joue", modale rejouer/skip
+  active   -> Premier visit, faux portfolio visible, bouton marteau pulsant
+  playing  -> Timer demarre, destruction active, HUD visible
+  complete -> 100% detruit, ecran de resultats
+  dismissed -> Overlay retire, vrai portfolio accessible
+
+MECANISME :
+  - Canvas offscreen sert de masque CSS (mask-image) sur le faux portfolio
+  - Canvas blanc = faux visible. On peint en noir (destination-out) = trous
+  - document.elementFromPoint() pour detecter les elements touches
+  - Effects canvas pour les particules d'eclats
+
+SCORING :
+  - Interactif (CTA/bouton) : 100 pts
+  - Carte/panel : 75 pts
+  - Titre (h1/h2) : 50 pts
+  - Texte : 25 pts
+  - Vide : 10 pts
+  - Combo : hits < 800ms, multiplicateur max 4x
+  - Auto-complete a 95%
+
+RANGS (par temps) :
+  < 30s : Artisan du Moyen Age
+  < 45s : Chevalier du Pixel
+  < 60s : Ecuyer Destructeur
+  < 90s : Paysan du Pixel
+  90s+  : Touriste
+
+Z-INDEX :
+  z-9000 : smash-overlay (faux portfolio + canvas)
+  z-9010 : HUD (barre, timer, combo, bouton)
+  z-9999 : Ink Transition (existante)
+
+CSS : ~400 lignes a la fin de globals.css
+  - .smash-overlay, .fake-portfolio (Inter, gradients bleu-violet)
+  - .smash-hud, .smash-end
+  - .smash-hit-layer avec curseur marteau SVG inline
+
+ACCESSIBILITE :
+  - prefers-reduced-motion: reduce -> skip direct
+  - Skip button toujours visible (min 44x44px)
+  - aria-hidden="true" sur l'overlay
+
+================================================================================
+10. TRANSITIONS DE PAGE (INK TRANSITION)
+================================================================================
+
+Quand on clique sur un projet, une animation d'encre recouvre l'ecran :
+  1. L'image de scene (public/projects/scenes/{slug}.png) se deploie
+  2. Le titre du projet apparait lettre par lettre en Grenze Gotisch
+  3. La page projet se charge derriere
+  4. L'encre se retire
+
+Phases : idle -> in -> hold -> out
+Durees : IN=950ms, OUT=480ms, LETTER_BASE=450ms, LETTER_STEP=62ms
+
+Le composant TransitionProvider enveloppe les children dans layout.tsx.
+Navigation declenchee via useInkTransition() hook.
+
+================================================================================
+11. COMMANDES UTILES
+================================================================================
+
+# Developement
+npm run dev            # Lance le serveur Turbopack sur :3000
+
+# Build
+npm run build          # Build de production
+
+# Verification
+npm run typecheck      # TypeScript strict
+npm run lint           # ESLint
+npm run verify:ui      # Screenshots automatises (Edge + Playwright)
+
+# En cas de probleme Turbopack (erreur 500, cache corrompu)
+# 1. Tuer tous les process node
+taskkill /F /IM node.exe
+# 2. Supprimer le cache
+rm -rf .next
+# 3. Relancer
+npm run dev
+
+================================================================================
+12. VERIFICATION UI (SCREENSHOTS AUTOMATISES)
+================================================================================
+
+Script : scripts/verify-ui.mjs
+Utilise : playwright-core avec Microsoft Edge (PAS Chromium telechargeable)
+Chemin Edge : C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+
+Le script :
+  - Charge chaque page du portfolio
+  - Verifie que les images se chargent
+  - Prend des screenshots
+  - Variable d'env : PORTFOLIO_URL (default http://localhost:3000)
+
+IMPORTANT : le serveur dev doit tourner AVANT de lancer verify:ui.
+
+================================================================================
+13. DEPLOIEMENT
+================================================================================
+
+Hebergement : Vercel
+Domaine : duplaixgaspard.com
+Variable d'env : NEXT_PUBLIC_SITE_URL (pour les metadonnees OG)
+
+Le projet n'utilise PAS git actuellement. Le deploy se fait probablement
+via l'interface Vercel ou via vercel CLI.
+
+================================================================================
+14. POINTS EN ATTENTE / TODO
+================================================================================
+
+- SONS du Smash Game : mecanisme cable (ENABLE_PROJECT_SOUND = false dans
+  project-grid.tsx), en attente de fichiers MP3
+- Texte "Six projets" dans i18n.ts -> a mettre a jour en "Sept projets"
+  (ou dynamiser le comptage)
+- Redirect next.config.ts : ajouter /projects/commbot -> /en/projects/commbot
+  si des liens externes pointent vers l'ancien format
+- Le projet n'a pas de depot git initialise
+
+================================================================================
+15. PIEGES CONNUS
+================================================================================
+
+1. CACHE TURBOPACK : apres des gros changements CSS, Turbopack peut
+   corrompre son cache et renvoyer des erreurs 500 "Cannot find module
+   turbopack_runtime.js". Solution : taskkill node.exe + rm -rf .next
+
+2. ORDRE THREADS/PROJECTS : le tableau `threads` dans lib/threads.ts DOIT
+   etre dans le meme ordre que le tableau `projects` dans data/projects.ts.
+   Sinon les couleurs de broderie seront decalees.
+
+3. MOTION V12 : s'importe depuis "motion/react", PAS "framer-motion".
+   AnimatePresence, motion.div, useAnimate, etc. = "motion/react"
+
+4. EMBROIDERY FILTER SUR SCREENSHOTS : le filtre de broderie ne doit
+   s'appliquer QU'AU LOGO (.card-thumb-logo), pas aux screenshots du
+   carousel. Le CSS utilise .project-card-media img.card-thumb-logo
+   pour cibler uniquement le logo.
+
+5. HOVER CARTE : le hover doit etre detecte sur toute la carte
+   (article.project-card), pas seulement sur la zone media. Le state
+   hoveredSlug est gere au niveau du ProjectGrid.
+
+6. TAPISSERIE : supprimee des cartes (display: none sur .project-card::after),
+   presente sur les pages projet (::before avec --thumb-filter a 6% opacity).
+
+7. FAUX PORTFOLIO SCROLL : le .smash-hit-layer (z-index 2) bloque le
+   scroll en phase "active". Il n'est rendu QUE quand phase === "playing".
+
+8. PLAYWRIGHT : utilise Edge, pas un Chromium telecharge. Le chemin est
+   code en dur dans verify-ui.mjs.
+
+================================================================================
+  FIN DU DOCUMENT
+================================================================================

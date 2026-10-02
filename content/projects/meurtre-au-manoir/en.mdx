@@ -1,0 +1,23 @@
+---
+title: "Murder at the Manor"
+summary: "An immersive investigation game where voice transcription and a local language model bring every interrogation to life."
+kicker: "Game design · Artificial intelligence"
+galleryAlt:
+  - "Introduction to the manor murder investigation"
+  - "Suspect selection interface"
+  - "Investigation explanation and clue screen"
+---
+
+## A murder mystery shaped by the questions each player asks.
+
+Murder at the Manor is an investigative game that combines structured clue gathering with open-ended, AI-driven dialogue. Players explore the crime scene, examine evidence and interrogate characters while the system keeps each exchange connected to the evolving context of the case.
+
+### A voice-led investigation
+
+**Pygame** renders the environment, manages player input and coordinates interactive elements such as character sprites, clues and dialogue. The interface provides the structure of a classic investigation while leaving room for more personal lines of enquiry.
+
+Spoken questions are converted into text with **Whisper**, creating a precise transcript of every interrogation. The result is then passed through Ollama to **Gemma 2**, which produces context-aware responses based on the character, the evidence and the player’s previous discoveries.
+
+### Technology serving the story
+
+The combination of real-time graphics, speech recognition and local generative AI makes dialogue feel more spontaneous without losing the structure needed by the mystery. Each clue and response contributes to an investigation that can unfold differently from one player to another.

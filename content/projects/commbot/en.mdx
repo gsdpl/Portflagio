@@ -1,0 +1,25 @@
+---
+title: "Commbot"
+summary: "Multimodal RAG assistant for a radio advertising agency, designed to prepare client meetings and centralise sales knowledge."
+kicker: "Development · Product"
+galleryAlt:
+  - "Client meeting preparation mode"
+  - "Advertiser summary sheet"
+  - "Commbot assistant home screen"
+---
+
+## An intelligent assistant for radio sales teams.
+
+Commbot is a conversational assistant built for the sales team of a radio advertising agency. It centralises business knowledge and streamlines client meeting preparation through a multimodal RAG architecture.
+
+### Architecture and ingestion
+
+The system ingests diverse sources — PDF documents, WordPress pages, images and videos — to build a rich, up-to-date knowledge base. Hybrid search combines semantic and full-text approaches, with French-specific linguistic normalisation and multilingual embedding models.
+
+### Meeting preparation
+
+The flagship feature lets sales representatives prepare client meetings: the assistant automatically aggregates relevant information about an advertiser — history, industry, tailored offers — to generate a structured, source-backed briefing document.
+
+### Technical stack
+
+The product is built with **Python** and **FastAPI** for the API layer, **Supabase** with pgvector for vector storage, the **Claude API** (Anthropic) for contextualised response generation, and **Coolify** for self-hosted deployment.
