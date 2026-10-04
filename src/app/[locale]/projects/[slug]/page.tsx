@@ -10,6 +10,7 @@ import { ProjectGallery } from "@/components/project-gallery";
 import { SiteHeader } from "@/components/site-header";
 import { Button } from "@/components/ui/button";
 import { FlagBackground } from "@/components/flag-background";
+import { NextProjectLink } from "@/components/next-project-link";
 import { projects } from "@/data/projects";
 import { getDictionary, isLocale } from "@/lib/i18n";
 import { getProjectContent, getProjectFrontmatter } from "@/lib/projects";
@@ -180,9 +181,11 @@ export default async function ProjectPage({
       </section>
       </BlurFade>
 
-      <Link
-        className="next-project"
+      <NextProjectLink
         href={`/${locale}/projects/${nextProject.slug}`}
+        slug={nextProject.slug}
+        title={nextFrontmatter.title}
+        accent={nextProject.accent}
         style={
           {
             "--next-accent": nextProject.accent,
@@ -197,7 +200,7 @@ export default async function ProjectPage({
           {withLettrine(nextFrontmatter.title, threadFor((projectIndex + 1) % projects.length).color)}
         </strong>
         <ArrowUpRight aria-hidden="true" />
-      </Link>
+      </NextProjectLink>
       </main>
     </>
   );

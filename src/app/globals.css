@@ -644,10 +644,6 @@ img {
 .section-heading,
 .resume-heading {
   position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 1.3fr) minmax(17rem, 0.55fr);
-  gap: 3rem;
-  align-items: end;
   padding-bottom: 2.3rem;
   border-bottom: 1px solid var(--line);
 }
@@ -1068,18 +1064,17 @@ img {
 }
 
 .resume-heading {
-  align-items: start;
   margin-bottom: 3rem;
 }
 
 .resume-heading > div {
-  display: grid;
-  gap: 1rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
 }
 
 .resume-heading h2 {
-  max-width: 14ch;
-  font-size: clamp(2.7rem, 5.6vw, 6rem);
+  font-size: clamp(2.2rem, 3.2vw, 3.6rem);
 }
 
 .resume-intro-card .glass-panel-content {
@@ -1164,6 +1159,40 @@ img {
 
 .resume-contact-line svg {
   width: 0.95rem;
+}
+
+.cv-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cv-select {
+  appearance: none;
+  min-height: 3.2rem;
+  padding: 0.75rem 2rem 0.75rem 1.15rem;
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink, #1c1917);
+  background: var(--paper, #faf4e8)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%231c1917' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")
+    right 0.7rem center / 0.75rem no-repeat;
+  border: 1px solid #000;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.cv-select:hover {
+  background-color: var(--paper-hover, #f3ebda);
+}
+
+.cv-select:focus-visible {
+  outline: 2px solid var(--blue, #1a00ff);
+  outline-offset: -2px;
 }
 
 .resume-body {
@@ -1529,6 +1558,17 @@ img {
 .project-page > *:not(.flag-background) {
   position: relative;
   z-index: 1;
+}
+
+body:has(.project-page) .brand-emblem,
+body:has(.project-page) .brand-emblem * {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+.project-page .gallery-section::before,
+.project-page .project-content-section::before {
+  display: none;
 }
 
 .project-hero {
@@ -2075,7 +2115,6 @@ img {
 
   .hero-bottom,
   .section-heading,
-  .resume-heading,
   .resume-body,
   .project-content-section {
     grid-template-columns: 1fr;
@@ -2372,11 +2411,24 @@ img {
   }
 
   .next-project {
-    min-height: 18rem;
+    min-height: 14rem;
   }
 
   .next-project strong {
     align-self: end;
+    font-size: clamp(2rem, 9vw, 3.6rem);
+  }
+
+  .project-hero-title h1 {
+    font-size: clamp(2.2rem, 8.5vw, 3.7rem);
+  }
+
+  .section-heading h2 {
+    font-size: clamp(2rem, 6.5vw, 3rem);
+  }
+
+  .not-found h1 {
+    font-size: clamp(2.2rem, 9vw, 3.5rem);
   }
 }
 

@@ -5,9 +5,9 @@ export const resumeData: Record<"en" | "fr", ResumeData> = {
     locale: "en",
     title: "Digital project lead with a designer’s eye and a builder’s hands.",
     introduction:
-      "I am completing my fourth year at Epitech Digital School, specialising in digital transformation. I design useful, optimised solutions around real user needs, from product framing to interface and implementation.",
+      "2 years of experience and graduated from Epitech Digital School with a Master's degree in Business & Technology. I specialise in digital transformation. I design useful, optimised solutions around real user needs, from product framing to interface and implementation.",
     availability:
-      "Looking for a first digital or product role from September 2026, after my work-study year.",
+      "Looking for a first digital or product role at the end of 2026",
     location: "Bordeaux, France",
     email: "contact@duplaixgaspard.fr",
     experiences: [
@@ -82,11 +82,11 @@ export const resumeData: Record<"en" | "fr", ResumeData> = {
   },
   fr: {
     locale: "fr",
-    title: "Chef de projet digital, avec un œil de designer et des mains de développeur.",
+    title: "Chef de projet digital, avec une vision utilisateur et un raisonnement de développeur.",
     introduction:
-      "Étudiant en quatrième année à Epitech Digital School, je me spécialise dans la transformation digitale. Je conçois des solutions utiles et optimisées autour des besoins réels des utilisateurs, du cadrage produit à l’interface et à son développement.",
+      "Fort de 2 ans d’expérience et diplomé de Epitech Digital School en MSc Business & Technology, je me spécialise dans la transformation digitale. Je conçois des solutions utiles et optimisées autour des besoins réels des utilisateurs, du cadrage produit à l’interface et à son développement.",
     availability:
-      "À la recherche d’un premier poste en digital ou product design à partir de septembre 2026, après mon alternance.",
+      "À la recherche d’un premier poste en tant que product engineer à partir de fin 2026 ",
     location: "Bordeaux, France",
     email: "contact@duplaixgaspard.fr",
     experiences: [

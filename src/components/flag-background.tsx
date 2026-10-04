@@ -162,7 +162,6 @@ export function FlagBackground({
 
     const vFovRad = (vFov * Math.PI) / 180;
     const visibleH = 2 * Math.tan(vFovRad / 2) * dist;
-    const visibleW = visibleH * (width / height);
 
     const renderer = new THREE.WebGLRenderer({
       alpha: false,
@@ -170,7 +169,8 @@ export function FlagBackground({
       powerPreference: "low-power",
     });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    const isMobile = width < 700;
+    renderer.setPixelRatio(isMobile ? 1 : Math.min(window.devicePixelRatio, 1.5));
     renderer.setClearColor(0xffffff, 1);
     container.appendChild(renderer.domElement);
 
@@ -179,7 +179,7 @@ export function FlagBackground({
     const material = new THREE.ShaderMaterial({
       uniforms: {
         uTime: { value: 0 },
-        uAmplitude: { value: 0.12 },
+        uAmplitude: { value: isMobile ? 0.08 : 0.12 },
         uTexture: { value: texture },
       },
       vertexShader,
@@ -188,9 +188,11 @@ export function FlagBackground({
       depthWrite: false,
     });
 
-    const planeW = visibleW * 1.4;
+    const refAspect = 16 / 9;
     const planeH = visibleH * 1.4;
-    const geometry = new THREE.PlaneGeometry(planeW, planeH, 120, 120);
+    const planeW = visibleH * refAspect * 1.4;
+    const segments = isMobile ? 60 : 120;
+    const geometry = new THREE.PlaneGeometry(planeW, planeH, segments, segments);
     const mesh = new THREE.Mesh(geometry, material);
     scene.add(mesh);
 

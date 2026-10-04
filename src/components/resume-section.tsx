@@ -1,5 +1,4 @@
 import {
-  ArrowDownToLine,
   ArrowUpRight,
   BriefcaseBusiness,
   GraduationCap,
@@ -13,6 +12,7 @@ import { BrandEmblem } from "@/components/brand-emblem";
 import { GlassPanel } from "@/components/glass/glass-panel";
 import { Lettrine } from "@/components/lettrine";
 import { Button } from "@/components/ui/button";
+import { CvDownload } from "@/components/cv-download";
 import { resumeData } from "@/data/resume";
 import { getDictionary } from "@/lib/i18n";
 import type { Locale } from "@/types/project";
@@ -32,11 +32,11 @@ export function ResumeSection({ locale }: { locale: Locale }) {
       <header className="resume-heading">
         <div>
           <span className="section-index">02</span>
+          <h2 id="resume-title">
+            <Lettrine letter={resume.title.slice(0, 1)} />
+            {resume.title.slice(1)}
+          </h2>
         </div>
-        <h2 id="resume-title">
-          <Lettrine letter={resume.title.slice(0, 1)} />
-          {resume.title.slice(1)}
-        </h2>
       </header>
 
       <GlassPanel className="resume-intro-card" variant="lens">
@@ -65,12 +65,7 @@ export function ResumeSection({ locale }: { locale: Locale }) {
               {resume.email}
             </a>
           </div>
-          <Button asChild>
-            <a href="/documents/cv-gaspard-duplaix.pdf" download>
-              <ArrowDownToLine aria-hidden="true" />
-              {dictionary.resume.download}
-            </a>
-          </Button>
+          <CvDownload buttonLabel={dictionary.resume.download} locale={locale} />
         </div>
       </GlassPanel>
 

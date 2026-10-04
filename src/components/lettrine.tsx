@@ -100,7 +100,7 @@ export function Lettrine({
       </defs>
 
       <g filter={`url(#${uid}-r)`}>
-        <rect x="4" y="4" width="92" height="92" rx="12" fill="#FFFFFF" />
+        <rect x="4" y="4" width="92" height="92" rx="12" fill={isProject ? "none" : "#FFFFFF"} />
         <rect x="4" y="4" width="92" height="92" rx="12" fill="none" stroke={fill} strokeWidth="2.6" />
         <rect x="9.5" y="9.5" width="81" height="81" rx="8" fill="none" stroke={accent} strokeWidth="1.3" opacity="0.9" />
 
@@ -117,7 +117,7 @@ export function Lettrine({
         <g transform="rotate(270 50 50)"><Corner fill={fill} accent={accent} /></g>
       </g>
 
-      <rect x="4" y="4" width="92" height="92" rx="12" filter={`url(#${uid}-g)`} />
+      {!isProject && <rect x="4" y="4" width="92" height="92" rx="12" filter={`url(#${uid}-g)`} />}
 
       <text
         x="50"

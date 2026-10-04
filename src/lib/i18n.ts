@@ -41,7 +41,7 @@ export const dictionaries = {
     resume: {
       eyebrow: "My path, in a few honest lines",
       portraitAlt: "Portrait of Gaspard Duplaix",
-      download: "Download French CV",
+      download: "Download CV",
       experience: "Experience",
       education: "Education",
       skills: "Skills",
@@ -102,7 +102,7 @@ export const dictionaries = {
     resume: {
       eyebrow: "Mon parcours, en quelques lignes sincères",
       portraitAlt: "Portrait de Gaspard Duplaix",
-      download: "Télécharger le CV français",
+      download: "Télécharger le CV",
       experience: "Expériences",
       education: "Formation",
       skills: "Compétences",
