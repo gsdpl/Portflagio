@@ -7,7 +7,6 @@ import {
   MapPin,
   Sparkles,
 } from "lucide-react";
-import Image from "next/image";
 import { BrandEmblem } from "@/components/brand-emblem";
 import { GlassPanel } from "@/components/glass/glass-panel";
 import { Lettrine } from "@/components/lettrine";
@@ -40,15 +39,6 @@ export function ResumeSection({ locale }: { locale: Locale }) {
       </header>
 
       <GlassPanel className="resume-intro-card" variant="lens">
-        <div className="resume-portrait-shell">
-          <Image
-            src="/brand/gaspard-photo.png"
-            alt={dictionary.resume.portraitAlt}
-            width={121}
-            height={121}
-            sizes="(max-width: 700px) 180px, 250px"
-          />
-        </div>
         <div className="resume-intro-copy">
           <p>{resume.introduction}</p>
           <p className="resume-availability">

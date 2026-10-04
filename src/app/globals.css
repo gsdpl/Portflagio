@@ -1078,44 +1078,7 @@ img {
 }
 
 .resume-intro-card .glass-panel-content {
-  display: grid;
-  grid-template-columns: minmax(13rem, 0.34fr) minmax(0, 1fr);
-  gap: clamp(2rem, 5vw, 5rem);
-  align-items: center;
   padding: clamp(1.3rem, 3vw, 3rem);
-}
-
-.resume-portrait-shell {
-  position: relative;
-  width: min(100%, 17rem);
-  aspect-ratio: 1;
-  padding: 0.65rem;
-  justify-self: center;
-  border: 1px solid var(--ink);
-  border-radius: 48% 52% 44% 56%;
-  background:
-    var(--textile-texture) 0 0 / 200px 200px repeat,
-    #ffffff;
-  transform: rotate(-3deg);
-}
-
-.resume-portrait-shell::before {
-  position: absolute;
-  inset: -0.75rem;
-  content: "";
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  border-radius: inherit;
-  transform: rotate(8deg);
-}
-
-.resume-portrait-shell img {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: inherit;
-  background: white;
 }
 
 .resume-intro-copy > p:first-child {
@@ -2162,11 +2125,6 @@ body:has(.project-page) .brand-emblem * {
     gap: 1.5rem;
   }
 
-  .resume-intro-card .glass-panel-content {
-    grid-template-columns: minmax(10rem, 0.35fr) 1fr;
-    gap: 2rem;
-  }
-
   .project-sidebar {
     position: static;
     display: grid;
@@ -2317,12 +2275,7 @@ body:has(.project-page) .brand-emblem * {
   }
 
   .resume-intro-card .glass-panel-content {
-    grid-template-columns: 1fr;
     padding: 1.2rem;
-  }
-
-  .resume-portrait-shell {
-    width: 11rem;
   }
 
   .resume-intro-copy > p:first-child {
@@ -2331,6 +2284,16 @@ body:has(.project-page) .brand-emblem * {
 
   .resume-contact-line {
     display: grid;
+  }
+
+  .cv-download {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .cv-select {
+    width: 100%;
   }
 
   .resume-timeline-item .glass-panel-content {
