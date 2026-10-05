@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Portfolio Manager</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Grenze+Gotisch:wght@700&display=swap">
+<style>
+:root {
+  --bg: #faf9f6;
+  --bg-card: #ffffff;
+  --bg-sidebar: #f0ede8;
+  --fg: #1a1a1a;
+  --fg-muted: #6b6560;
+  --accent: #1a00ff;
+  --accent-soft: rgba(26, 0, 255, 0.08);
+  --pink: #ff8284;
+  --border: rgba(0, 0, 0, 0.12);
+  --border-light: rgba(0, 0, 0, 0.06);
+  --radius: 10px;
+  --radius-sm: 6px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --font-body: 'Manrope', system-ui, sans-serif;
+  --font-display: 'Grenze Gotisch', serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141210; --bg-card: #1e1c18; --bg-sidebar: #1a1816;
+    --fg: #e8e4de; --fg-muted: #9a9590; --accent: #6b5bff;
+    --accent-soft: rgba(107,91,255,0.12); --pink: #ff9a9c;
+    --border: rgba(255,255,255,0.1); --border-light: rgba(255,255,255,0.05);
+    --shadow: 0 1px 3px rgba(0,0,0,0.3); color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141210; --bg-card: #1e1c18; --bg-sidebar: #1a1816;
+  --fg: #e8e4de; --fg-muted: #9a9590; --accent: #6b5bff;
+  --accent-soft: rgba(107,91,255,0.12); --pink: #ff9a9c;
+  --border: rgba(255,255,255,0.1); --border-light: rgba(255,255,255,0.05);
+  --shadow: 0 1px 3px rgba(0,0,0,0.3); color-scheme: dark;
+}
+body { background: var(--bg); color: var(--fg); font-family: var(--font-body); margin: 0; padding: 0; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+* { box-sizing: border-box; }
+
+.app { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+@media (max-width: 768px) { .app { grid-template-columns: 1fr; } .sidebar { border-right: none; border-bottom: 1px solid var(--border); max-height: 35vh; overflow-y: auto; } }
+
+.sidebar { background: var(--bg-sidebar); border-right: 1px solid var(--border); padding: 20px 12px; display: flex; flex-direction: column; gap: 4px; overflow-y: auto; }
+.sidebar-title { font-family: var(--font-display); font-size: 1.5rem; margin: 0 0 2px 8px; }
+.sidebar-sub { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--fg-muted); margin: 0 0 12px 8px; font-weight: 600; }
+
+.project-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: var(--radius-sm); cursor: pointer; border: none; background: transparent; width: 100%; text-align: left; color: var(--fg); font-family: var(--font-body); font-size: 0.85rem; font-weight: 500; transition: background 0.15s; }
+.project-item:hover { background: var(--border-light); }
+.project-item.active { background: var(--accent-soft); color: var(--accent); }
+.project-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.project-item-year { font-size: 0.7rem; color: var(--fg-muted); margin-left: auto; font-variant-numeric: tabular-nums; }
+
+.btn-add { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border-radius: var(--radius-sm); cursor: pointer; border: 1.5px dashed var(--border); background: transparent; width: 100%; text-align: left; color: var(--fg-muted); font-family: var(--font-body); font-size: 0.82rem; font-weight: 500; transition: all 0.15s; margin-top: 6px; }
+.btn-add:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+
+.main { padding: 28px 36px; overflow-y: auto; max-height: 100vh; }
+@media (max-width: 768px) { .main { padding: 20px 16px; max-height: none; } }
+
+.main-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 70vh; text-align: center; color: var(--fg-muted); }
+.main-empty h2 { font-family: var(--font-display); font-size: 1.6rem; margin: 0 0 8px; color: var(--fg); }
+.main-empty p { font-size: 0.88rem; max-width: 340px; }
+
+.editor-header { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; flex-wrap: wrap; }
+.editor-header h2 { font-family: var(--font-display); font-size: 1.7rem; margin: 0; flex: 1; min-width: 180px; }
+
+.btn { padding: 7px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-card); color: var(--fg); font-family: var(--font-body); font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+.btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn-primary:hover { opacity: 0.9; color: #fff; }
+.btn-danger { color: var(--pink); }
+.btn-danger:hover { background: rgba(255,130,132,0.08); border-color: var(--pink); }
+.btn-sm { padding: 5px 10px; font-size: 0.75rem; }
+
+.tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+.tab { padding: 10px 20px; border: none; background: none; color: var(--fg-muted); font-family: var(--font-body); font-size: 0.82rem; font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s; }
+.tab:hover { color: var(--fg); }
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+@media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-group.full { grid-column: 1 / -1; }
+.form-label { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--fg-muted); }
+.form-hint { font-size: 0.7rem; color: var(--fg-muted); opacity: 0.7; }
+
+.form-input, .form-textarea, .form-select { padding: 9px 13px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-card); color: var(--fg); font-family: var(--font-body); font-size: 0.88rem; transition: border-color 0.15s; width: 100%; }
+.form-input:focus, .form-textarea:focus, .form-select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.form-textarea { resize: vertical; min-height: 90px; }
+
+.color-field { display: flex; align-items: center; gap: 8px; }
+.color-swatch { width: 34px; height: 34px; border-radius: var(--radius-sm); border: 1px solid var(--border); cursor: pointer; flex-shrink: 0; padding: 0; overflow: hidden; }
+.color-swatch input[type="color"] { width: 50px; height: 50px; border: none; padding: 0; cursor: pointer; margin: -8px; }
+
+.tags-wrap { display: flex; flex-wrap: wrap; gap: 5px; }
+.tag { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 100px; background: var(--accent-soft); color: var(--accent); font-size: 0.76rem; font-weight: 600; }
+.tag-x { cursor: pointer; opacity: 0.5; font-size: 0.95rem; line-height: 1; background: none; border: none; color: inherit; padding: 0; }
+.tag-x:hover { opacity: 1; }
+.tag-input-row { display: flex; gap: 5px; margin-top: 5px; }
+.tag-input-row .form-input { flex: 1; }
+
+.cat-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.cat-chip { padding: 5px 13px; border-radius: 100px; border: 1.5px solid var(--border); background: transparent; color: var(--fg-muted); font-family: var(--font-body); font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+.cat-chip.active { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+
+.section-title { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--fg-muted); margin: 30px 0 14px; padding-bottom: 7px; border-bottom: 1px solid var(--border-light); }
+
+.media-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1px solid var(--border-light); border-radius: var(--radius-sm); background: var(--bg-card); margin-bottom: 8px; }
+.media-item .media-preview { width: 48px; height: 32px; border-radius: 4px; object-fit: cover; background: var(--border-light); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; color: var(--fg-muted); overflow: hidden; }
+.media-item .media-info { flex: 1; min-width: 0; }
+
+.toggle-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; }
+.toggle-label { font-size: 0.88rem; font-weight: 500; }
+.toggle-desc { font-size: 0.75rem; color: var(--fg-muted); }
+.toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+.toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+.toggle-track { position: absolute; inset: 0; background: var(--border); border-radius: 12px; transition: background 0.2s; cursor: pointer; }
+.toggle-track::after { content: ''; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; background: var(--bg-card); border-radius: 50%; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+.toggle input:checked + .toggle-track { background: var(--accent); }
+.toggle input:checked + .toggle-track::after { transform: translateX(20px); }
+.toggle input:focus-visible + .toggle-track { box-shadow: 0 0 0 3px var(--accent-soft); }
+
+.code-block-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; margin-top: 16px; }
+.code-block-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--fg-muted); }
+.code-block { background: var(--bg-sidebar); border: 1px solid var(--border-light); border-radius: var(--radius); padding: 14px 18px; font-family: 'SF Mono','Consolas',monospace; font-size: 0.78rem; line-height: 1.6; overflow-x: auto; white-space: pre; color: var(--fg); tab-size: 2; }
+
+.preview-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
+.preview-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.preview-dot { width: 44px; height: 44px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 1.3rem; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.25); flex-shrink: 0; }
+.preview-info h3 { margin: 0; font-size: 1.05rem; font-weight: 700; }
+.preview-info p { margin: 2px 0 0; font-size: 0.78rem; color: var(--fg-muted); }
+.preview-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+.preview-tag { padding: 2px 9px; border-radius: 100px; font-size: 0.7rem; font-weight: 600; border: 1px solid var(--border); color: var(--fg-muted); }
+
+.copy-toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--fg); color: var(--bg); padding: 9px 22px; border-radius: 100px; font-size: 0.8rem; font-weight: 600; opacity: 0; transition: all 0.3s; pointer-events: none; z-index: 100; }
+.copy-toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+.lang-tabs { display: flex; gap: 0; margin-bottom: 16px; }
+.lang-tab { padding: 6px 16px; border: 1px solid var(--border); background: transparent; color: var(--fg-muted); font-family: var(--font-body); font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+.lang-tab:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
+.lang-tab:last-child { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; border-left: none; }
+.lang-tab.active { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-title">Portfolio</div>
+    <div class="sidebar-sub">Gestionnaire de projets</div>
+    <div id="project-list"></div>
+    <button class="btn-add" onclick="addNewProject()"><span style="font-size:1.1rem">+</span> Nouveau projet</button>
+  </aside>
+  <main class="main" id="main-panel">
+    <div class="main-empty" id="empty-state">
+      <h2>Gestionnaire de projets</h2>
+      <p>Sélectionne un projet ou crée-en un nouveau. L'outil génère le code prêt à coller.</p>
+    </div>
+    <div id="editor" hidden></div>
+  </main>
+</div>
+<div class="copy-toast" id="toast"></div>
+
+<script>
+const DEFAULTS = [
+  { slug:"neo-travel", year:2025, technologies:["Next.js","React","Tailwind CSS","Figma","Radix UI"], categories:["development","product"], accent:"#d7ff5f", accentSoft:"#293113", thumbnail:{src:"/projects/neo-travel/thumbnail.png",width:2880,height:1620}, gallery:[{src:"/projects/neo-travel/dashboard.png",width:1891,height:1078},{src:"/projects/neo-travel/offers.png",width:1891,height:1079},{src:"/projects/neo-travel/messages.png",width:1892,height:1079}], externalUrl:"https://v0-neocarplatform-topaz.vercel.app/login", title_fr:"Neo Travel", title_en:"Neo Travel", summary_fr:"Plateforme de location de véhicules full-stack", summary_en:"Full-stack car rental platform", kicker_fr:"Product Design · Développement", kicker_en:"Product Design · Development", description_fr:"", description_en:"", galleryAlts:["Dashboard","Offres","Messages"], threadColor:"#82B300", tapestry:true },
+  { slug:"commbot", year:2025, technologies:["Python","FastAPI","Supabase","Claude API","RAG","Coolify"], categories:["development","product"], accent:"#00b4d8", accentSoft:"#0a2a33", thumbnail:{src:"/projects/commbot/thumbnail.svg",width:2880,height:1800}, gallery:[{src:"/projects/commbot/preparation.webp",width:2000,height:1250},{src:"/projects/commbot/fiche.webp",width:2000,height:1250},{src:"/projects/commbot/accueil.webp",width:2000,height:1250}], title_fr:"CommBot", title_en:"CommBot", summary_fr:"Assistant RAG pour régie radio", summary_en:"RAG assistant for radio advertising", kicker_fr:"Développement · Product", kicker_en:"Development · Product", description_fr:"", description_en:"", galleryAlts:["Préparation","Fiche","Accueil"], threadColor:"#00B4D8", tapestry:true },
+  { slug:"enjoy-33", year:2025, technologies:["JavaScript","Velo.js","Meta API","UX/UI"], categories:["development","design"], accent:"#ff2c91", accentSoft:"#3a1027", thumbnail:{src:"/projects/enjoy-33/thumbnail.png",width:2880,height:1620}, gallery:[{src:"/projects/enjoy-33/home.png",width:2533,height:1599},{src:"/projects/enjoy-33/radio.png",width:2533,height:1599},{src:"/projects/enjoy-33/directory.png",width:2536,height:1599}], title_fr:"Enjoy 33", title_en:"Enjoy 33", summary_fr:"Plateforme radio et annuaire", summary_en:"Radio & directory platform", kicker_fr:"Développement · Design", kicker_en:"Development · Design", description_fr:"", description_en:"", galleryAlts:["Accueil","Radio","Annuaire"], threadColor:"#FF2C91", tapestry:true },
+  { slug:"meurtre-au-manoir", year:2025, technologies:["Python","Pygame","Whisper","Ollama","Gemma 2"], categories:["development","product"], accent:"#b927ff", accentSoft:"#291036", thumbnail:{src:"/projects/meurtre-au-manoir/thumbnail.png",width:2880,height:1620}, gallery:[{src:"/projects/meurtre-au-manoir/context.png",width:2270,height:1468},{src:"/projects/meurtre-au-manoir/suspects.png",width:2267,height:1464},{src:"/projects/meurtre-au-manoir/explanation.png",width:2270,height:1465}], title_fr:"Meurtre au Manoir", title_en:"Meurtre au Manoir", summary_fr:"Jeu d'enquête avec IA vocale", summary_en:"AI murder mystery game", kicker_fr:"Développement · Product", kicker_en:"Development · Product", description_fr:"", description_en:"", galleryAlts:["Contexte","Suspects","Explication"], threadColor:"#B927FF", tapestry:true },
+  { slug:"we-happers", year:2024, technologies:["Figma","Webflow","Branding","Teamwork"], categories:["design","product"], accent:"#617df4", accentSoft:"#121a3c", thumbnail:{src:"/projects/we-happers/thumbnail.svg",width:2880,height:1800}, gallery:[{src:"/projects/we-happers/questions.png",width:786,height:1704},{src:"/projects/we-happers/pyramid-two.png",width:786,height:1704},{src:"/projects/we-happers/pyramid-one.png",width:590,height:1278}], title_fr:"We Happers", title_en:"We Happers", summary_fr:"Branding et design web", summary_en:"Branding & web design", kicker_fr:"Design · Product", kicker_en:"Design · Product", description_fr:"", description_en:"", galleryAlts:["Questions","Pyramide 2","Pyramide 1"], threadColor:"#617DF4", tapestry:true },
+  { slug:"naviroll", year:2024, technologies:["FlutterFlow","Figma","Kanban","Luma AI"], categories:["design","product"], accent:"#ff7d65", accentSoft:"#3a1713", thumbnail:{src:"/projects/naviroll/thumbnail.svg",width:2880,height:1800}, gallery:[{src:"/projects/naviroll/overview.png",width:350,height:765},{src:"/projects/naviroll/flutterflow.png",width:778,height:1692},{src:"/projects/naviroll/content.png",width:778,height:1692}], title_fr:"Naviroll", title_en:"Naviroll", summary_fr:"Application de navigation mobile", summary_en:"Mobile navigation app", kicker_fr:"Design · Product", kicker_en:"Design · Product", description_fr:"", description_en:"", galleryAlts:["Aperçu","FlutterFlow","Contenu"], threadColor:"#FF7D65", tapestry:true },
+  { slug:"festivault", year:2022, technologies:["Figma","Illustrator","Photoshop","Notion"], categories:["design","product"], accent:"#40c99a", accentSoft:"#102f25", thumbnail:{src:"/projects/festivault/thumbnail.svg",width:2880,height:1800}, gallery:[{src:"/projects/festivault/timeline.png",width:1560,height:3376},{src:"/projects/festivault/map.png",width:1560,height:3379},{src:"/projects/festivault/emergencies.png",width:1560,height:3408}], title_fr:"Festivault", title_en:"Festivault", summary_fr:"Application compagnon de festival", summary_en:"Festival companion app", kicker_fr:"Design · Product", kicker_en:"Design · Product", description_fr:"", description_en:"", galleryAlts:["Timeline","Carte","Urgences"], threadColor:"#40C99A", tapestry:true }
+];
+
+let projects = [], selectedIdx = -1, activeTab = 'general', contentLang = 'fr';
+
+function init() {
+  try { const s = localStorage.getItem('pm-v2'); if (s) projects = JSON.parse(s); else projects = JSON.parse(JSON.stringify(DEFAULTS)); } catch { projects = JSON.parse(JSON.stringify(DEFAULTS)); }
+  renderSidebar();
+}
+function save() { try { localStorage.setItem('pm-v2', JSON.stringify(projects)); } catch {} }
+
+function renderSidebar() {
+  document.getElementById('project-list').innerHTML = projects.map((p,i) =>
+    '<button class="project-item '+(i===selectedIdx?'active':'')+'" onclick="selectProject('+i+')">' +
+      '<span class="project-dot" style="background:'+p.accent+'"></span>' +
+      '<span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(p.title_fr||p.slug)+'</span>' +
+      '<span class="project-item-year">'+p.year+'</span>' +
+    '</button>').join('');
+}
+
+function selectProject(i) { selectedIdx = i; renderSidebar(); renderEditor(); }
+
+function addNewProject() {
+  projects.push({ slug:"", year:new Date().getFullYear(), technologies:[], categories:[], accent:"#1a00ff", accentSoft:"#0a0033", thumbnail:{src:"",width:2880,height:1620}, gallery:[], title_fr:"Nouveau projet", title_en:"New project", summary_fr:"", summary_en:"", kicker_fr:"", kicker_en:"", description_fr:"", description_en:"", galleryAlts:[], threadColor:"#1a00ff", tapestry:true });
+  save(); selectedIdx = projects.length-1; renderSidebar(); renderEditor();
+}
+
+function deleteProject() { if(selectedIdx<0)return; projects.splice(selectedIdx,1); save(); selectedIdx=-1; renderSidebar(); document.getElementById('editor').hidden=true; document.getElementById('empty-state').hidden=false; }
+
+function U(f,v) { if(selectedIdx<0)return; var p=projects[selectedIdx]; var parts=f.split('.'); var o=p; for(var i=0;i<parts.length-1;i++) o=o[parts[i]]; o[parts[parts.length-1]]=v; save(); renderSidebar(); }
+function UR(f,v) { U(f,v); renderEditor(); }
+
+function toggleCat(c) { if(selectedIdx<0)return; var p=projects[selectedIdx]; var i=p.categories.indexOf(c); if(i>=0)p.categories.splice(i,1); else p.categories.push(c); save(); renderEditor(); }
+
+function addTech() { var inp=document.getElementById('tech-input'); var v=inp.value.trim(); if(!v||selectedIdx<0)return; projects[selectedIdx].technologies.push(v); inp.value=''; save(); renderEditor(); }
+function rmTech(i) { projects[selectedIdx].technologies.splice(i,1); save(); renderEditor(); }
+
+function addGalleryItem() {
+  if(selectedIdx<0) return;
+  var p = projects[selectedIdx];
+  var slug = p.slug || 'mon-projet';
+  var n = p.gallery.length + 1;
+  p.gallery.push({ src:'/projects/'+slug+'/screen'+n+'.png', width:1920, height:1080 });
+  if (!p.galleryAlts) p.galleryAlts = [];
+  p.galleryAlts.push('Description image '+n);
+  save(); renderEditor();
+}
+function rmGalleryItem(i) { projects[selectedIdx].gallery.splice(i,1); if(projects[selectedIdx].galleryAlts) projects[selectedIdx].galleryAlts.splice(i,1); save(); renderEditor(); }
+function updateGallery(i,f,v) { projects[selectedIdx].gallery[i][f] = f==='src'?v:parseInt(v)||0; save(); }
+function updateGalleryAlt(i,v) { if(!projects[selectedIdx].galleryAlts) projects[selectedIdx].galleryAlts=[]; projects[selectedIdx].galleryAlts[i]=v; save(); }
+
+function darken(hex) { var r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16); return '#'+[r,g,b].map(function(c){return Math.round(c*0.18).toString(16).padStart(2,'0')}).join(''); }
+function autoSoft() { U('accentSoft', darken(projects[selectedIdx].accent)); renderEditor(); }
+
+function switchTab(t) { activeTab=t; renderEditor(); }
+function switchLang(l) { contentLang=l; renderEditor(); }
+
+function copyText(text, label) {
+  try { navigator.clipboard.writeText(text).then(function(){toast(label+' copié !')}).catch(function(){toast('Sélectionne le texte')}); } catch(e) { toast('Sélectionne le texte'); }
+}
+function toast(m) { var t=document.getElementById('toast'); t.textContent=m; t.classList.add('visible'); setTimeout(function(){t.classList.remove('visible')},2000); }
+
+function genProjectsTS() {
+  var p=projects[selectedIdx];
+  var gal = p.gallery.length ? p.gallery.map(function(g){return '      { src: "'+g.src+'", width: '+g.width+', height: '+g.height+' },'}).join('\n') : '      // Ajouter les screenshots';
+  return '  {\n    slug: "'+p.slug+'",\n    year: '+p.year+',\n    technologies: ['+p.technologies.map(function(t){return '"'+t+'"'}).join(', ')+'],\n    categories: ['+p.categories.map(function(c){return '"'+c+'"'}).join(', ')+'],\n    accent: "'+p.accent+'",\n    accentSoft: "'+p.accentSoft+'",\n    thumbnail: {\n      src: "'+(p.thumbnail?.src || '/projects/'+p.slug+'/thumbnail.png')+'",\n      width: '+(p.thumbnail?.width||2880)+',\n      height: '+(p.thumbnail?.height||1620)+',\n    },\n    gallery: [\n'+gal+'\n    ],'+(p.externalUrl?'\n    externalUrl: "'+p.externalUrl+'",':'')+'\n  },';
+}
+
+function genThread() { return '  "'+(projects[selectedIdx].threadColor||projects[selectedIdx].accent)+'", // '+projects[selectedIdx].slug; }
+
+function genMDX(lang) {
+  var p=projects[selectedIdx];
+  var title = lang==='fr' ? (p.title_fr||'') : (p.title_en||'');
+  var summary = lang==='fr' ? (p.summary_fr||'') : (p.summary_en||'');
+  var kicker = lang==='fr' ? (p.kicker_fr||'') : (p.kicker_en||'');
+  var desc = lang==='fr' ? (p.description_fr||'') : (p.description_en||'');
+  var alts = (p.galleryAlts||[]).map(function(a){return '  - "'+a+'"'}).join('\n') || '  - "Image 1"';
+  return '---\ntitle: "'+title+'"\nsummary: "'+summary+'"\nkicker: "'+kicker+'"\ngalleryAlt:\n'+alts+'\n---\n\n'+(desc || (lang==='fr'?'## À propos\n\nDescription du projet...':'## About\n\nProject description...'));
+}
+
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function escPre(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function renderEditor() {
+  if(selectedIdx<0) return;
+  document.getElementById('empty-state').hidden = true;
+  var el = document.getElementById('editor');
+  el.hidden = false;
+  var p = projects[selectedIdx];
+
+  var html = '<div class="editor-header"><h2>'+esc(p.title_fr||'Nouveau projet')+'</h2><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-danger" onclick="deleteProject()">Supprimer</button></div></div>';
+  html += '<div class="tabs"><button class="tab '+(activeTab==='general'?'active':'')+'" onclick="switchTab(\'general\')">Général</button><button class="tab '+(activeTab==='content'?'active':'')+'" onclick="switchTab(\'content\')">Contenu</button><button class="tab '+(activeTab==='media'?'active':'')+'" onclick="switchTab(\'media\')">Médias</button><button class="tab '+(activeTab==='code'?'active':'')+'" onclick="switchTab(\'code\')">Code généré</button></div>';
+
+  if (activeTab === 'general') {
+    html += '<div class="section-title" style="margin-top:0">Identité</div>';
+    html += '<div class="form-grid">';
+    html += '<div class="form-group"><label class="form-label">Titre (FR)</label><input class="form-input" value="'+esc(p.title_fr||'')+'" oninput="U(\'title_fr\',this.value)"></div>';
+    html += '<div class="form-group"><label class="form-label">Titre (EN)</label><input class="form-input" value="'+esc(p.title_en||'')+'" oninput="U(\'title_en\',this.value)"></div>';
+    html += '<div class="form-group"><label class="form-label">Slug (URL)</label><input class="form-input" value="'+esc(p.slug)+'" oninput="U(\'slug\',this.value)" placeholder="mon-projet" style="font-family:monospace;font-size:0.82rem"></div>';
+    html += '<div class="form-group"><label class="form-label">Année</label><input class="form-input" type="number" value="'+p.year+'" oninput="U(\'year\',parseInt(this.value)||2026)"></div>';
+    html += '<div class="form-group"><label class="form-label">URL externe (optionnel)</label><input class="form-input" value="'+esc(p.externalUrl||'')+'" oninput="U(\'externalUrl\',this.value)" placeholder="https://..."></div>';
+    html += '</div>';
+
+    html += '<div class="section-title">Couleurs</div><div class="form-grid">';
+    html += '<div class="form-group"><label class="form-label">Accent (couleur du projet)</label><div class="color-field"><div class="color-swatch"><input type="color" value="'+p.accent+'" oninput="UR(\'accent\',this.value)"></div><input class="form-input" value="'+p.accent+'" oninput="UR(\'accent\',this.value)" style="font-family:monospace;font-size:0.82rem;flex:1"></div></div>';
+    html += '<div class="form-group"><label class="form-label">Accent sombre</label><div class="color-field"><div class="color-swatch"><input type="color" value="'+p.accentSoft+'" oninput="UR(\'accentSoft\',this.value)"></div><input class="form-input" value="'+p.accentSoft+'" oninput="U(\'accentSoft\',this.value)" style="font-family:monospace;font-size:0.82rem;flex:1"><button class="btn btn-sm" onclick="autoSoft()" title="Générer depuis l\'accent">Auto</button></div></div>';
+    html += '<div class="form-group"><label class="form-label">Couleur de broderie</label><div class="color-field"><div class="color-swatch"><input type="color" value="'+(p.threadColor||p.accent)+'" oninput="UR(\'threadColor\',this.value)"></div><input class="form-input" value="'+(p.threadColor||p.accent)+'" oninput="U(\'threadColor\',this.value)" style="font-family:monospace;font-size:0.82rem;flex:1"></div></div>';
+    html += '</div>';
+
+    html += '<div class="section-title">Catégories</div><div class="cat-row">';
+    ['development','design','product'].forEach(function(c) {
+      html += '<button class="cat-chip '+(p.categories.includes(c)?'active':'')+'" onclick="toggleCat(\''+c+'\')">'+c[0].toUpperCase()+c.slice(1)+'</button>';
+    });
+    html += '</div>';
+
+    html += '<div class="section-title">Technologies</div><div class="tags-wrap">';
+    p.technologies.forEach(function(t,i) { html += '<span class="tag">'+esc(t)+'<button class="tag-x" onclick="rmTech('+i+')">×</button></span>'; });
+    html += '</div><div class="tag-input-row"><input class="form-input" id="tech-input" placeholder="Ajouter une techno..." onkeydown="if(event.key===\'Enter\'){event.preventDefault();addTech()}"><button class="btn btn-sm" onclick="addTech()">+</button></div>';
+
+    html += '<div class="section-title">Options d\'affichage</div>';
+    html += '<div class="toggle-row"><label class="toggle"><input type="checkbox" '+(p.tapestry!==false?'checked':'')+' onchange="UR(\'tapestry\',this.checked)"><span class="toggle-track"></span></label><div><div class="toggle-label">Tapisserie de fond</div><div class="toggle-desc">Motif broderie en arrière-plan de la page projet</div></div></div>';
+
+    html += '<div class="section-title">Aperçu</div>';
+    html += '<div class="preview-card"><div class="preview-header"><div class="preview-dot" style="background:'+p.accent+'">'+(p.title_fr||'N')[0].toUpperCase()+'</div><div class="preview-info"><h3>'+esc(p.title_fr||'Nouveau projet')+'</h3><p>'+esc(p.kicker_fr||'Catégorie')+' · '+p.year+'</p></div></div>';
+    if(p.summary_fr) html += '<p style="font-size:0.82rem;color:var(--fg-muted);margin:0 0 10px">'+esc(p.summary_fr)+'</p>';
+    html += '<div class="preview-tags">'+p.technologies.map(function(t){return '<span class="preview-tag">'+esc(t)+'</span>'}).join('')+'</div>';
+    if(p.tapestry===false) html += '<p style="font-size:0.72rem;color:var(--fg-muted);margin:10px 0 0;opacity:0.7">Tapisserie désactivée</p>';
+    html += '</div>';
+  }
+
+  else if (activeTab === 'content') {
+    var lang = contentLang;
+    var title = lang==='fr' ? p.title_fr : p.title_en;
+    var summary = lang==='fr' ? p.summary_fr : p.summary_en;
+    var kicker = lang==='fr' ? p.kicker_fr : p.kicker_en;
+    var desc = lang==='fr' ? p.description_fr : p.description_en;
+    html += '<div class="lang-tabs"><button class="lang-tab '+(lang==='fr'?'active':'')+'" onclick="switchLang(\'fr\')">Français</button><button class="lang-tab '+(lang==='en'?'active':'')+'" onclick="switchLang(\'en\')">English</button></div>';
+    html += '<div class="form-grid">';
+    html += '<div class="form-group"><label class="form-label">Titre</label><input class="form-input" value="'+esc(title||'')+'" oninput="U(\'title_'+lang+'\',this.value)"></div>';
+    html += '<div class="form-group"><label class="form-label">Kicker</label><input class="form-input" value="'+esc(kicker||'')+'" oninput="U(\'kicker_'+lang+'\',this.value)" placeholder="Design · Development"></div>';
+    html += '<div class="form-group full"><label class="form-label">Résumé court</label><input class="form-input" value="'+esc(summary||'')+'" oninput="U(\'summary_'+lang+'\',this.value)" placeholder="'+(lang==='fr'?'Description en une phrase':'One-line description')+'"></div>';
+    html += '<div class="form-group full"><label class="form-label">Description complète (MDX)</label><div class="form-hint">Corps de la page projet. Utilise la syntaxe Markdown.</div><textarea class="form-textarea" style="min-height:200px" oninput="U(\'description_'+lang+'\',this.value)" placeholder="'+(lang==='fr'?'## À propos\\n\\nDécris le projet en détail...':'## About\\n\\nDescribe the project in detail...')+'">'+esc(desc||'')+'</textarea></div>';
+    html += '</div>';
+    html += '<div class="section-title">Textes alternatifs des images</div><div class="form-grid">';
+    (p.galleryAlts||[]).forEach(function(a,i) {
+      html += '<div class="form-group"><label class="form-label">Image '+(i+1)+'</label><input class="form-input" value="'+esc(a)+'" oninput="updateGalleryAlt('+i+',this.value)"></div>';
+    });
+    html += '</div>';
+    if(!p.galleryAlts||p.galleryAlts.length===0) html += '<p style="font-size:0.82rem;color:var(--fg-muted)">Ajoute des images dans l\'onglet Médias pour définir leurs textes alternatifs.</p>';
+  }
+
+  else if (activeTab === 'media') {
+    html += '<div class="section-title" style="margin-top:0">Logo / Thumbnail</div>';
+    html += '<p style="font-size:0.78rem;color:var(--fg-muted);margin:0 0 12px">Image principale du projet. Placer le fichier dans <code style="font-size:0.75rem">public/projects/'+(p.slug||'{slug}')+'/</code></p>';
+    html += '<div class="form-grid"><div class="form-group full"><label class="form-label">Chemin du fichier</label><input class="form-input" value="'+esc(p.thumbnail?.src||'')+'" oninput="U(\'thumbnail.src\',this.value)" placeholder="/projects/mon-projet/thumbnail.png" style="font-family:monospace;font-size:0.82rem"></div>';
+    html += '<div class="form-group"><label class="form-label">Largeur (px)</label><input class="form-input" type="number" value="'+(p.thumbnail?.width||2880)+'" oninput="U(\'thumbnail.width\',parseInt(this.value)||2880)"></div>';
+    html += '<div class="form-group"><label class="form-label">Hauteur (px)</label><input class="form-input" type="number" value="'+(p.thumbnail?.height||1620)+'" oninput="U(\'thumbnail.height\',parseInt(this.value)||1620)"></div></div>';
+    html += '<div class="form-hint" style="margin-top:6px">Formats recommandés : PNG, SVG. Dimensions : 2880×1620 ou 2880×1800.</div>';
+
+    html += '<div class="section-title">Screenshots de galerie</div>';
+    p.gallery.forEach(function(g,i) {
+      html += '<div class="media-item"><div class="media-preview" style="background:'+p.accent+'20">'+(i+1)+'</div><div class="media-info" style="display:flex;flex-direction:column;gap:4px"><input class="form-input" value="'+esc(g.src)+'" oninput="updateGallery('+i+',\'src\',this.value)" style="font-family:monospace;font-size:0.75rem;padding:5px 8px"><div style="display:flex;gap:6px"><input class="form-input" type="number" value="'+g.width+'" oninput="updateGallery('+i+',\'width\',this.value)" style="padding:5px 8px;font-size:0.75rem" placeholder="width"><span style="color:var(--fg-muted);font-size:0.75rem;line-height:30px">×</span><input class="form-input" type="number" value="'+g.height+'" oninput="updateGallery('+i+',\'height\',this.value)" style="padding:5px 8px;font-size:0.75rem" placeholder="height"></div></div><button class="btn btn-sm btn-danger" onclick="rmGalleryItem('+i+')">×</button></div>';
+    });
+    html += '<button class="btn" onclick="addGalleryItem()" style="margin-top:4px">+ Ajouter une image</button>';
+
+    html += '<div class="section-title">Image de transition (Ink Transition)</div>';
+    html += '<p style="font-size:0.78rem;color:var(--fg-muted);margin:0 0 8px">Image plein écran affichée lors de la transition vers la page projet.</p>';
+    html += '<div class="form-group"><label class="form-label">Chemin</label><input class="form-input" value="/projects/scenes/'+(p.slug||'{slug}')+'.png" disabled style="font-family:monospace;font-size:0.82rem;opacity:0.6"><div class="form-hint">Placer le fichier PNG dans <code style="font-size:0.72rem">public/projects/scenes/'+(p.slug||'{slug}')+'.png</code></div></div>';
+  }
+
+  else if (activeTab === 'code') {
+    html += '<div class="code-block-header" style="margin-top:0"><span class="code-block-label">src/data/projects.ts</span><button class="btn btn-sm" onclick="copyText(genProjectsTS(),\'projects.ts\')">Copier</button></div><div class="code-block">'+escPre(genProjectsTS())+'</div>';
+    html += '<div class="code-block-header"><span class="code-block-label">src/lib/threads.ts</span><button class="btn btn-sm" onclick="copyText(genThread(),\'threads.ts\')">Copier</button></div><div class="code-block">'+escPre(genThread())+'</div>';
+    html += '<div class="code-block-header"><span class="code-block-label">content/projects/'+(p.slug||'{slug}')+'/fr.mdx</span><button class="btn btn-sm" onclick="copyText(genMDX(\'fr\'),\'fr.mdx\')">Copier</button></div><div class="code-block">'+escPre(genMDX('fr'))+'</div>';
+    html += '<div class="code-block-header"><span class="code-block-label">content/projects/'+(p.slug||'{slug}')+'/en.mdx</span><button class="btn btn-sm" onclick="copyText(genMDX(\'en\'),\'en.mdx\')">Copier</button></div><div class="code-block">'+escPre(genMDX('en'))+'</div>';
+
+    html += '<div class="section-title">Checklist de fichiers</div><div style="font-size:0.82rem;line-height:1.8;color:var(--fg-muted)">';
+    html += '<div>&#9744; <code>public/projects/'+(p.slug||'{slug}')+'/thumbnail.png</code> — Logo</div>';
+    p.gallery.forEach(function(g,i) { html += '<div>&#9744; <code>public'+g.src+'</code> — Screenshot '+(i+1)+'</div>'; });
+    html += '<div>&#9744; <code>public/projects/scenes/'+(p.slug||'{slug}')+'.png</code> — Ink Transition</div>';
+    html += '<div>&#9744; <code>content/projects/'+(p.slug||'{slug}')+'/fr.mdx</code></div>';
+    html += '<div>&#9744; <code>content/projects/'+(p.slug||'{slug}')+'/en.mdx</code></div></div>';
+  }
+
+  el.innerHTML = html;
+}
+
+init();
+</script>
+
+</body>
+</html>
