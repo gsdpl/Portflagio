@@ -37,7 +37,6 @@ export function TransitionProvider({ children }: { children: React.ReactNode }) 
 
   const start = useCallback(
     (next: InkTarget) => {
-      // Respect reduced-motion: skip the effect, navigate straight away.
       if (
         typeof window !== "undefined" &&
         window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -45,10 +44,22 @@ export function TransitionProvider({ children }: { children: React.ReactNode }) 
         router.push(next.href);
         return;
       }
-      targetHref.current = next.href;
-      startedAt.current = Date.now();
-      setTarget(next);
-      setPhase("in");
+
+      const kick = () => {
+        targetHref.current = next.href;
+        startedAt.current = Date.now();
+        setTarget(next);
+        setPhase("in");
+      };
+
+      const img = new Image();
+      img.src = next.image;
+      if (img.complete) {
+        kick();
+      } else {
+        img.onload = kick;
+        img.onerror = kick;
+      }
     },
     [router],
   );
