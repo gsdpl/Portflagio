@@ -33,9 +33,9 @@ export const projects: ProjectMetadata[] = [
       height: 1800,
     },
     gallery: [
-      { src: "/projects/commbot/preparation.webp", width: 2000, height: 1250 },
-      { src: "/projects/commbot/fiche.webp", width: 2000, height: 1250 },
-      { src: "/projects/commbot/accueil.webp", width: 2000, height: 1250 },
+      { src: "/projects/commbot/preparation.png", width: 2000, height: 1250 },
+      { src: "/projects/commbot/fiche.png", width: 2000, height: 1250 },
+      { src: "/projects/commbot/accueil.png", width: 2000, height: 1250 },
     ],
   },
   {

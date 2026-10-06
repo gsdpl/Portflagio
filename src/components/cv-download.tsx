@@ -8,15 +8,15 @@ type CvOption = { label: string; file: string };
 const CV_OPTIONS: Record<string, CvOption[]> = {
   fr: [
     { label: "CV Français", file: "/documents/cv-gaspard-duplaix.pdf" },
-    { label: "CV Français simplifié", file: "/documents/cv-gaspard-duplaix-simple.pdf" },
-    { label: "CV Anglais", file: "/documents/cv-gaspard-duplaix-en.pdf" },
-    { label: "CV Anglais simplifié", file: "/documents/cv-gaspard-duplaix-en-simple.pdf" },
+    { label: "CV Français simplifié", file: "/documents/CV simple Gaspard Duplaix.pdf" },
+    { label: "CV Anglais", file: "/documents/CV ENG Gaspard Duplaix.pdf" },
+    { label: "CV Anglais simplifié", file: "/documents/CV ENG simple Gaspard Duplaix.pdf" },
   ],
   en: [
     { label: "French CV", file: "/documents/cv-gaspard-duplaix.pdf" },
-    { label: "French CV (simplified)", file: "/documents/cv-gaspard-duplaix-simple.pdf" },
-    { label: "English CV", file: "/documents/cv-gaspard-duplaix-en.pdf" },
-    { label: "English CV (simplified)", file: "/documents/cv-gaspard-duplaix-en-simple.pdf" },
+    { label: "French CV (simplified)", file: "/documents/CV simple Gaspard Duplaix.pdf" },
+    { label: "English CV", file: "/documents/CV ENG Gaspard Duplaix.pdf" },
+    { label: "English CV (simplified)", file: "/documents/CV ENG simple Gaspard Duplaix.pdf" },
   ],
 };
 
